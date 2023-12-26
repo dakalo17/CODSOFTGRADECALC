@@ -1,6 +1,4 @@
 package com.calculator.grade.studentgradecalculator.controllers;
-
-
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleObjectProperty;
@@ -80,58 +78,94 @@ public class MainController implements Initializable {
         //clear before calculation
         rowEntryList.clear();
         tbvResult.setPlaceholder(null);
+
         for (Node vbChild : vbMain.getChildren()) {
             if (vbChild instanceof HBox hbox && !hbox.getId().equals(hbButtons.getId())) {
                 ObservableList<String> ol = FXCollections.observableArrayList();
 
-                //for (Node child : vbMain.getChildren()) {
-                //   if (child instanceof HBox hbox && !hbox.getId().equals(hbButtons.getId())) {
                 for (Node hBoxChild : hbox.getChildren()) {
                     if (hBoxChild instanceof TextField textField) {
                         ol.add(textField.getText());
                     }
-                    //}
                 }
 
                 rowEntryList.add(ol);
-                // tbvResult.setEditable(true);
+
                 tbvResult.setItems(rowEntryList);
             }
         }
     }
+
+    private void calculatedRows(){
+
+        double sum = 0;
+
+
+        for (ObservableList<String> rows : rowEntryList) {
+
+            for (int j = 0; j < rows.size(); j++) {
+                //skip 1st column
+                if( j == 0 ) continue;
+
+                sum += Double.parseDouble(rows.get(j));
+
+            }
+        }
+
+        double average =sum/rowEntryList.size();
+
+        ObservableList<String> ol = FXCollections.observableArrayList();
+        ol.add("Total");
+        ol.add(String.valueOf(sum));
+
+
+        rowEntryList.add(ol);
+        tbvResult.setItems(rowEntryList);
+
+
+        ObservableList<String> ol1 = FXCollections.observableArrayList();
+        ol1.add("Average");
+        ol1.add(String.valueOf(average));
+
+        rowEntryList.add(ol1);
+        tbvResult.setItems(rowEntryList);
+
+
+        ObservableList<String> ol2 = getGrade(average);
+
+        rowEntryList.add(ol2);
+        tbvResult.setItems(rowEntryList);
+    }
+
+    private ObservableList<String> getGrade(double average) {
+        char chGrade = '\0';
+
+        if(average >=0&& average <=29){
+            chGrade='1';
+        }else if(average >=30 && average <=39){
+            chGrade='2';
+        }else if(average >=40 && average <=49){
+            chGrade='3';
+        }else if(average >=50 && average <=59){
+            chGrade='4';
+        } else if(average >=60 && average <=69){
+            chGrade='5';
+        }else if(average >=70 && average <=79){
+            chGrade='6';
+        }else if(average >=80 && average <=100){
+            chGrade='7';
+        }
+
+        ObservableList<String> ol2 = FXCollections.observableArrayList();
+        ol2.add("Grade");
+        ol2.add(String.valueOf(chGrade));
+        return ol2;
+    }
+
     @FXML
     protected void onCalculate(ActionEvent actionEvent) {
         addRows();
-
-//        var children = vbMain.getChildren();
-//        for (int i = 0; i < children.size(); i++) {
-//
-//            if(children.get(i) instanceof HBox hBox && !hBox.getId().equals(hbButtons.getId())) {
-//
-//                var hBoxChildren = hBox.getChildren();
-//                for (int j = 0; j < hBoxChildren.size(); j++) {
-//                    if(hBoxChildren.get(i) instanceof TextField textField){
-//                        if(textField.getId().contains("txtSubject")) {
-////                            //add column
-////                            TableColumn<ObservableList<String>, String> col = new TableColumn<>(textField.getText());
-////                            col.setCellValueFactory(val -> {
-////                                var rowlist = val.getValue();
-////
-////                                return new SimpleStringProperty();
-////                            });
-////                            tbvResult.getColumns().add(col);
-//
-//                        }else if(textField.getId().contains("txtMarks")){
-//                            //add row
-//                        }
-//
-//                        //add row
-//                    }
-//                }
-//
-//            }
-//        }
-
+        calculatedRows();
 
     }
 
