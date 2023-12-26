@@ -1,7 +1,7 @@
 package com.calculator.grade.studentgradecalculator.controllers;
+
+import com.calculator.grade.studentgradecalculator.CustomDialog;
 import javafx.application.Platform;
-import javafx.beans.Observable;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -10,15 +10,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.*;
-
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
-import java.util.*;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
 
 public class MainController implements Initializable {
@@ -30,14 +33,11 @@ public class MainController implements Initializable {
     @FXML
     private VBox vbMain;
 
-    private UUID uuid;
-
     private int hBoxCount =0;
 
     private ObservableList<ObservableList<String>> rowEntryList;
 
     private static final String[] columns = {"Subject","Mark"};
-    private static final String[] rows = {"Total","Average","Grade"};
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -56,14 +56,7 @@ public class MainController implements Initializable {
             final int colIndex = i;
             colAve.setCellValueFactory(val -> {
                 var list = val.getValue();
-
-                double sum = 0;
-
-                for (String s : list) {
-                    //sum += Double.parseDouble(s);
-                }
-                //double average = sum / list.size();
-              return new SimpleStringProperty(list.get(colIndex));
+                return new SimpleStringProperty(list.get(colIndex));
 
             });
             tbvResult.getColumns().add(colAve);
@@ -164,15 +157,31 @@ public class MainController implements Initializable {
 
     @FXML
     protected void onCalculate(ActionEvent actionEvent) {
+        if(validate())return;
         addRows();
         calculatedRows();
 
     }
 
+    private boolean validate() {
+        for(Node vbNodeChild :vbMain.getChildren()){
+            if(vbNodeChild instanceof HBox hBox){
+                for (Node hbNodeChild:hBox.getChildren()){
+                    if(hbNodeChild instanceof TextField textField &&
+                    textField.getText().isEmpty()){
+                        //notify user of empty
+                        CustomDialog.run("Empty input","Input can not be empty");
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     @FXML
     protected void onAddEntry(ActionEvent actionEvent) {
 
-        uuid = UUID.randomUUID();
         HBox hBox = new HBox();
 
 
@@ -181,7 +190,7 @@ public class MainController implements Initializable {
         hBox.prefWidth(Region.USE_COMPUTED_SIZE);
         hBox.prefHeight(Region.USE_COMPUTED_SIZE);
 
-         Button btnRemove = new Button("Remove");
+        Button btnRemove = new Button("Remove");
         TextField txtSubjectName = new TextField();
         TextField txtMarks = new TextField();
 
