@@ -20,8 +20,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 
 
 public class MainController implements Initializable {
@@ -94,11 +93,18 @@ public class MainController implements Initializable {
         double sum = 0;
 
 
+
+
+
+
         for (ObservableList<String> rows : rowEntryList) {
 
             for (int j = 0; j < rows.size(); j++) {
                 //skip 1st column
-                if( j == 0 ) continue;
+                if( j == 0 ) {
+                    //validate the subject textbox
+                    continue;
+                }
 
                 sum += Double.parseDouble(rows.get(j));
 
@@ -164,14 +170,37 @@ public class MainController implements Initializable {
     }
 
     private boolean validate() {
+
+        //the purpose is to prevent duplication,
+        Set<String> subjectSet = new HashSet<>();
+        int count = 0;
         for(Node vbNodeChild :vbMain.getChildren()){
             if(vbNodeChild instanceof HBox hBox){
                 for (Node hbNodeChild:hBox.getChildren()){
-                    if(hbNodeChild instanceof TextField textField &&
-                    textField.getText().isEmpty()){
-                        //notify user of empty
-                        CustomDialog.run("Empty input","Input can not be empty");
-                        return true;
+
+                    if(hbNodeChild instanceof TextField textField){
+
+                        if(textField.getText().isEmpty()) {
+                            //notify user of empty
+                            CustomDialog.run("Empty input", "Input can not be empty");
+                            return true;
+                        }
+                        //ensures that it only checks the subject textfield(s)
+                        if(textField.getId().startsWith("txtSubject")) {
+
+                            String text = textField.getText();
+                            subjectSet.add(text.toLowerCase());
+                            count++;
+
+                            if(count != subjectSet.size()){
+                                //a subject was not added meaning that its a duplicate
+                                CustomDialog.run("Duplicate input", "You entered a duplicate subject.");
+                                return true;
+                            }
+                        }
+
+
+
                     }
                 }
             }
