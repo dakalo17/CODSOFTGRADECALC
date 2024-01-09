@@ -21,6 +21,9 @@
              <Insets />
           </opaqueInsets>
         </VBox>
-      <TableView fx:id="tbvResult" />
+      <TableView fx:id="tbvResult">
+         <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"  />
+         </columnResizePolicy></TableView>
     </HBox>
 </ScrollPane>
