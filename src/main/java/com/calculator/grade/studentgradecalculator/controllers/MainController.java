@@ -111,7 +111,8 @@ public class MainController implements Initializable {
             }
         }
 
-        double average =sum/rowEntryList.size();
+        double average =Math.round(sum/rowEntryList.size());
+
 
         ObservableList<String> ol = FXCollections.observableArrayList();
         ol.add("Total");
